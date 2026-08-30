@@ -1567,13 +1567,57 @@ function renderAdminSubpage(page){
 
 const ADMIN_SUBPAGE_TITLES = {qr:'QR code',appearance:'Appearance',billing:'Billing',team:'Team',restaurant:'Restaurant'};
 function subHead(title,eyebrow=''){ return `<div class="back-row"><button data-action="subpage-back">${icon('back',18)}</button><div><div class="eyebrow">${escapeHtml(eyebrow)}</div><strong>${escapeHtml(title)}</strong></div></div>`; }
+/* Live miniature: the real guest-menu renderer drawn at full mobile width
+   (390px) inside each card, then shrunk with transform: scale(). No fake
+   skeleton — the card shows the actual template with real dishes. */
 function templatePreview(id){
- // A miniature of the actual guest menu, so the choice is visible before it is made.
- return `<div class="preset-preview tpl-${id}">
-  <span class="tpl-bar"></span>
-  <span class="tpl-card"><span class="thumb"></span><i class="l1"></i><i class="l2"></i><span class="tpl-price"></span></span>
-  <span class="tpl-card second"><span class="thumb"></span><i class="l1"></i><i class="l2"></i><span class="tpl-price"></span></span>
- </div>`;
+ const a=state.appearance;
+ const cat=state.categories.find(c=>visibleItemsOf(c).length)||state.categories[0];
+ const items=cat?visibleItemsOf(cat).slice(0,2):[];
+ const themeClass=state.theme==='dark'?'dark-menu':'';
+ return `<div class="preset-preview tpl-live"><div class="tpl-live-page public-root ${themeClass} template-${id} images-${a.images} typography-${a.typography}" style="--menu-brand:${a.brand};--brand:${a.brand};transform:scale(.4)">
+  <div class="tpl-live-head"><b>${escapeHtml(state.restaurant.name)}</b><span>${cat?escapeHtml(tCategory(cat)):''}</span></div>
+  <div class="product-list">${items.map((i,ii)=>renderPublicItem(i,cat,ii,{static:true})).join('')}</div>
+ </div></div>`;
+}
+/* The inner page is 390px wide; the scale follows the card's rendered width,
+   so it stays correct across screen sizes and orientation changes. */
+function scaleTemplatePreviews(){
+ document.querySelectorAll('.tpl-live').forEach(outer=>{
+  const inner=outer.querySelector('.tpl-live-page');
+  const w=outer.clientWidth;
+  if(!inner||!w) return;
+  inner.style.transform=`scale(${w/390})`;
+ });
+}
+window.addEventListener('resize',scaleTemplatePreviews);
+/* In-place template selection: toggle classes on the existing cards, move the
+   check badge and the dot, update the hero copy — no DOM rebuild, so the
+   scroll position survives and scrollIntoView never races a re-render. */
+function selectTemplateCard(id){
+ const strip=document.querySelector('.template-scroll');
+ if(!strip){ render(); return; }
+ const cards=[...strip.querySelectorAll('.preset')];
+ cards.forEach(card=>{
+  const sel=card.dataset.value===id;
+  card.classList.toggle('selected',sel);
+  card.setAttribute('aria-pressed',String(sel));
+  const check=card.querySelector('.preset-check');
+  if(sel&&!check) card.querySelector('strong')?.insertAdjacentHTML('beforeend',`<span class="preset-check">${icon('check',12)}</span>`);
+  if(!sel&&check) check.remove();
+ });
+ const activeIdx=cards.findIndex(c=>c.dataset.value===id);
+ document.querySelectorAll('.template-dots i').forEach((d,i)=>d.classList.toggle('active',i===activeIdx));
+ const current=templates.find(t=>t[0]===id);
+ const hero=document.querySelector('.appearance-hero');
+ if(hero&&current){
+  const name=hero.querySelector('strong'), sub=hero.querySelector('span');
+  if(name) name.textContent=current[1];
+  if(sub) sub.textContent=current[2];
+ }
+ requestAnimationFrame(()=>{
+  strip.querySelector('.preset.selected')?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+ });
 }
 function appearancePage(){
  const a=state.appearance;
@@ -2218,7 +2262,7 @@ function postRender(){
  }
  requestAnimationFrame(()=>{
   document.querySelectorAll('.reveal-item').forEach((el,i)=>{ if(!('IntersectionObserver' in window)){el.classList.add('visible');return;} });
-  setupReveal(); setupPublicObservers(); renderLiveQr(); mountTour();
+  setupReveal(); setupPublicObservers(); renderLiveQr(); mountTour(); scaleTemplatePreviews();
  });
  if(state.mode==='landing') startLandingDemo();
  if(state.mode==='preview'&&!state.preview.languageConfirmed&&!ui.sheet&&!ui.modal){ setTimeout(()=>{ ui.sheet='language'; render(); },80); }
@@ -2404,7 +2448,15 @@ app.addEventListener('click',e=>{
  if(a==='item-actions'){ ui.sheet='itemActions'; ui.sheetData={id:btn.dataset.id}; render(); return; }
  if(a==='move-item-up'){ moveItem(btn.dataset.id,'up'); return; }
  if(a==='move-item-down'){ moveItem(btn.dataset.id,'down'); return; }
- if(a==='appearance'){ state.appearance[btn.dataset.key]=btn.dataset.value; save(); render(); if(btn.dataset.key==='template'){ document.querySelector('.template-scroll .preset.selected')?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); } return; }
+ if(a==='appearance'){
+  const key=btn.dataset.key, value=btn.dataset.value;
+  state.appearance[key]=value; save();
+  /* Template taps never re-render the page: rebuilding the strip would reset
+     its scroll position (the flash back to the first card). Selection only
+     toggles classes on the cards that are already in the DOM. */
+  if(key==='template'){ selectTemplateCard(value); return; }
+  render(); return;
+ }
  if(a==='brand-color'){ state.appearance.brand=btn.dataset.color; save(); render(); return; }
  if(a==='pick-template'){ state.appearance.template=btn.dataset.value; save(); toast(`${(templates.find(t=>t[0]===btn.dataset.value)||[])[1]||'Template'} applied`); render(); return; }
  if(a==='qr-style'){ state.qrStyle=btn.dataset.style; save(); render(); return; }
