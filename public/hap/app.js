@@ -1567,14 +1567,30 @@ function renderAdminSubpage(page){
 
 const ADMIN_SUBPAGE_TITLES = {qr:'QR code',appearance:'Appearance',billing:'Billing',team:'Team',restaurant:'Restaurant'};
 function subHead(title,eyebrow=''){ return `<div class="back-row"><button data-action="subpage-back">${icon('back',18)}</button><div><div class="eyebrow">${escapeHtml(eyebrow)}</div><strong>${escapeHtml(title)}</strong></div></div>`; }
+/* Live miniature: the real guest-menu renderer drawn at full mobile width
+   (390px) inside each card, then shrunk with transform: scale(). No fake
+   skeleton — the card shows the actual template with real dishes. */
 function templatePreview(id){
- // A miniature of the actual guest menu, so the choice is visible before it is made.
- return `<div class="preset-preview tpl-${id}">
-  <span class="tpl-bar"></span>
-  <span class="tpl-card"><span class="thumb"></span><i class="l1"></i><i class="l2"></i><span class="tpl-price"></span></span>
-  <span class="tpl-card second"><span class="thumb"></span><i class="l1"></i><i class="l2"></i><span class="tpl-price"></span></span>
- </div>`;
+ const a=state.appearance;
+ const cat=state.categories.find(c=>visibleItemsOf(c).length)||state.categories[0];
+ const items=cat?visibleItemsOf(cat).slice(0,2):[];
+ const themeClass=state.theme==='dark'?'dark-menu':'';
+ return `<div class="preset-preview tpl-live"><div class="tpl-live-page public-root ${themeClass} template-${id} images-${a.images} typography-${a.typography}" style="--menu-brand:${a.brand};--brand:${a.brand};transform:scale(.4)">
+  <div class="tpl-live-head"><b>${escapeHtml(state.restaurant.name)}</b><span>${cat?escapeHtml(tCategory(cat)):''}</span></div>
+  <div class="product-list">${items.map((i,ii)=>renderPublicItem(i,cat,ii,{static:true})).join('')}</div>
+ </div></div>`;
 }
+/* The inner page is 390px wide; the scale follows the card's rendered width,
+   so it stays correct across screen sizes and orientation changes. */
+function scaleTemplatePreviews(){
+ document.querySelectorAll('.tpl-live').forEach(outer=>{
+  const inner=outer.querySelector('.tpl-live-page');
+  const w=outer.clientWidth;
+  if(!inner||!w) return;
+  inner.style.transform=`scale(${w/390})`;
+ });
+}
+window.addEventListener('resize',scaleTemplatePreviews);
 function appearancePage(){
  const a=state.appearance;
  const current = templates.find(([id])=>id===a.template) || templates[0];
