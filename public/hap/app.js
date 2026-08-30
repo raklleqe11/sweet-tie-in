@@ -1591,6 +1591,34 @@ function scaleTemplatePreviews(){
  });
 }
 window.addEventListener('resize',scaleTemplatePreviews);
+/* In-place template selection: toggle classes on the existing cards, move the
+   check badge and the dot, update the hero copy — no DOM rebuild, so the
+   scroll position survives and scrollIntoView never races a re-render. */
+function selectTemplateCard(id){
+ const strip=document.querySelector('.template-scroll');
+ if(!strip){ render(); return; }
+ const cards=[...strip.querySelectorAll('.preset')];
+ cards.forEach(card=>{
+  const sel=card.dataset.value===id;
+  card.classList.toggle('selected',sel);
+  card.setAttribute('aria-pressed',String(sel));
+  const check=card.querySelector('.preset-check');
+  if(sel&&!check) card.querySelector('strong')?.insertAdjacentHTML('beforeend',`<span class="preset-check">${icon('check',12)}</span>`);
+  if(!sel&&check) check.remove();
+ });
+ const activeIdx=cards.findIndex(c=>c.dataset.value===id);
+ document.querySelectorAll('.template-dots i').forEach((d,i)=>d.classList.toggle('active',i===activeIdx));
+ const current=templates.find(t=>t[0]===id);
+ const hero=document.querySelector('.appearance-hero');
+ if(hero&&current){
+  const name=hero.querySelector('strong'), sub=hero.querySelector('span');
+  if(name) name.textContent=current[1];
+  if(sub) sub.textContent=current[2];
+ }
+ requestAnimationFrame(()=>{
+  strip.querySelector('.preset.selected')?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+ });
+}
 function appearancePage(){
  const a=state.appearance;
  const current = templates.find(([id])=>id===a.template) || templates[0];
