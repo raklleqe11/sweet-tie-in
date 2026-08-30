@@ -841,8 +841,11 @@ button.signal-row>svg:last-child{color:var(--subtle);flex:none}
 .appearance-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin-bottom:16px}
 .appearance-hero strong{display:block;font-size:17px;letter-spacing:-.02em}
 .appearance-hero span{display:block;font-size:11px;color:var(--muted)}
-.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.preset-grid .preset{flex:none;width:100%}
+.template-scroll{gap:10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+.template-scroll .preset{flex:0 0 46%;max-width:160px;scroll-snap-align:start}
+.template-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.template-dots i{height:6px;width:6px;border-radius:99px;background:color-mix(in srgb,var(--text) 18%,transparent);transition:width .2s,background .2s}
+.template-dots i.active{width:16px;background:var(--brand)}
 .preset strong{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .preset-check{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--brand);color:#fff;flex:0 0 auto}
 
