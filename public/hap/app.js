@@ -2420,7 +2420,15 @@ app.addEventListener('click',e=>{
  if(a==='item-actions'){ ui.sheet='itemActions'; ui.sheetData={id:btn.dataset.id}; render(); return; }
  if(a==='move-item-up'){ moveItem(btn.dataset.id,'up'); return; }
  if(a==='move-item-down'){ moveItem(btn.dataset.id,'down'); return; }
- if(a==='appearance'){ state.appearance[btn.dataset.key]=btn.dataset.value; save(); render(); if(btn.dataset.key==='template'){ document.querySelector('.template-scroll .preset.selected')?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); } return; }
+ if(a==='appearance'){
+  const key=btn.dataset.key, value=btn.dataset.value;
+  state.appearance[key]=value; save();
+  /* Template taps never re-render the page: rebuilding the strip would reset
+     its scroll position (the flash back to the first card). Selection only
+     toggles classes on the cards that are already in the DOM. */
+  if(key==='template'){ selectTemplateCard(value); return; }
+  render(); return;
+ }
  if(a==='brand-color'){ state.appearance.brand=btn.dataset.color; save(); render(); return; }
  if(a==='pick-template'){ state.appearance.template=btn.dataset.value; save(); toast(`${(templates.find(t=>t[0]===btn.dataset.value)||[])[1]||'Template'} applied`); render(); return; }
  if(a==='qr-style'){ state.qrStyle=btn.dataset.style; save(); render(); return; }
