@@ -849,71 +849,12 @@ button.signal-row>svg:last-child{color:var(--subtle);flex:none}
 .preset strong{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .preset-check{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--brand);color:#fff;flex:0 0 auto}
 
-/* Miniature guest menu. Each template overrides only what makes it itself. */
-.preset-preview{height:82px;display:flex;flex-direction:column;gap:5px;padding:7px}
-.preset-preview .tpl-bar{display:block;height:6px;width:60%;border-radius:99px;background:color-mix(in srgb,var(--brand) 55%,transparent);flex:0 0 auto}
-.preset-preview .tpl-card{position:relative;display:block;flex:1 1 0;min-height:0;border-radius:8px;background:var(--surface);padding:5px 6px;overflow:hidden}
-.preset-preview .tpl-card .thumb{float:left;width:18px;height:18px;border-radius:5px;margin:0 5px 0 0;background:color-mix(in srgb,var(--brand) 28%,var(--surface-2))}
-.preset-preview i{display:block;height:4px;border-radius:3px;background:color-mix(in srgb,var(--text) 22%,transparent);margin:2px 0}
-.preset-preview i.l1{width:52%}
-.preset-preview i.l2{width:34%;opacity:.6}
-.preset-preview .tpl-price{position:absolute;right:6px;top:6px;width:12px;height:4px;border-radius:3px;background:color-mix(in srgb,var(--brand) 60%,transparent)}
-
-/* Clean — plain rows, no imagery */
-.tpl-clean .tpl-card{background:transparent;border-bottom:1px solid var(--line);border-radius:0;padding:4px 0}
-.tpl-clean .thumb{display:none}
-/* Modern — soft cards with imagery */
-.tpl-modern .tpl-card{box-shadow:0 3px 8px rgb(50 38 28/.1)}
-/* Editorial — full-bleed image above copy */
-.tpl-editorial .tpl-card{padding:0}
-.tpl-editorial .thumb{float:none;width:100%;height:22px;border-radius:0;margin:0 0 4px}
-.tpl-editorial i{margin-left:5px}
-.tpl-editorial .tpl-card.second{display:none}
-.tpl-editorial .tpl-bar{width:38%}
-/* Bistro — warm European tint */
-.tpl-bistro{background:#efe2d2}
-.tpl-bistro .tpl-card{background:#fbf5ec;border:1px solid #e2cdb4}
-/* Classy — hairlines and serif rhythm */
-.tpl-classy{background:var(--surface)}
-.tpl-classy .tpl-card{background:transparent;border-top:1px solid var(--text);border-radius:0;opacity:.85}
-.tpl-classy .thumb{display:none}
-.tpl-classy .tpl-bar{width:30%;height:2px;background:var(--text)}
-/* Image First — photography dominates */
-.tpl-imageFirst .tpl-card{padding:0}
-.tpl-imageFirst .thumb{float:none;width:100%;height:100%;border-radius:0;margin:0;background:color-mix(in srgb,var(--brand) 45%,var(--surface-2))}
-.tpl-imageFirst i{display:none}
-/* Compact — dense list, many rows */
-.tpl-compact{gap:3px}
-.tpl-compact .tpl-card{padding:2px 4px;border-radius:4px}
-.tpl-compact .thumb{display:none}
-.tpl-compact i.l2{display:none}
-.tpl-compact .tpl-bar{height:4px;width:45%}
-/* Street — bold, high contrast */
-.tpl-street .tpl-bar{height:9px;width:70%;border-radius:3px;background:var(--text)}
-.tpl-street .tpl-card{background:var(--brand);border-radius:4px}
-.tpl-street i{background:rgb(255 255 255/.85);height:5px}
-.tpl-street .thumb{background:rgb(255 255 255/.35)}
-.tpl-street .tpl-price{background:#fff}
-/* Noir — dark fine dining */
-.tpl-noir{background:#191614}
-.tpl-noir .tpl-card{background:#241f1c}
-.tpl-noir i{background:rgb(255 255 255/.55)}
-.tpl-noir .tpl-bar{background:#c8a86a}
-.tpl-noir .thumb{background:rgb(255 255 255/.18)}
-/* Coastal — light, airy, seaside */
-.tpl-coastal{background:#e7f1f4}
-.tpl-coastal .tpl-card{background:#fff;border-radius:12px}
-.tpl-coastal .tpl-bar{background:#5d9bab}
-.tpl-coastal .thumb{border-radius:50%;background:#cfe4ea}
-/* Market — chalkboard */
-.tpl-market{background:#232a24}
-.tpl-market .tpl-card{background:transparent;border-bottom:1px dashed rgb(255 255 255/.4);border-radius:0;padding:3px 0}
-.tpl-market i{background:rgb(255 255 255/.6)}
-.tpl-market .tpl-bar{background:rgb(255 255 255/.75)}
-.tpl-market .thumb{display:none}
-/* Grid — two-column tiles */
-.tpl-grid{flex-direction:row;flex-wrap:wrap;align-items:flex-start}
-.tpl-grid .tpl-bar{width:100%}
-.tpl-grid .tpl-card{flex:1 1 40%;padding:4px}
-.tpl-grid .thumb{float:none;width:100%;height:16px;margin:0 0 3px}
-.tpl-grid i.l2{display:none}
+/* Live template preview: the real guest menu rendered at 390px and scaled
+   down with transform (see scaleTemplatePreviews in app.js). The outer box
+   clips; the inner page is inert and anchored top-left. */
+.preset-preview.tpl-live{height:auto;aspect-ratio:4/5;padding:0;display:block;background:var(--menu-bg,#fbf6ef)}
+.tpl-live-page{position:absolute;top:0;left:0;width:390px;transform-origin:top left;pointer-events:none;min-height:0}
+.tpl-live-head{padding:16px 16px 10px}
+.tpl-live-head b{display:block;font-family:var(--font-serif);font-size:23px;letter-spacing:-.01em;color:var(--menu-text)}
+.tpl-live-head span{display:block;font-size:11px;font-weight:850;letter-spacing:.09em;text-transform:uppercase;color:var(--menu-brand);margin-top:7px}
+.tpl-live-page .product-list{padding:2px 14px 16px}
