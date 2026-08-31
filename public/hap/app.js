@@ -372,9 +372,22 @@ const PROMO_STYLES = [
 function promoStyleName(id){ return (PROMO_STYLES.find(s=>s[0]===id)||PROMO_STYLES[0])[1]; }
 const PROMO_LABELS = ["Chef's Pick","Tonight's Pick",'Popular','New','House Favourite','Seasonal','Limited','Table deal','Pair & pour'];
 const CATEGORY_TINTS = [['brand','Brand'],['sage','Sage'],['sand','Sand'],['clay','Clay'],['night','Night']];
+/* Five templates, each a genuinely different layout system rather than a
+   colour swap: centred editorial list, magazine columns, dark fine dining,
+   bold ink outlines, photo tiles. Old ids fold into the closest survivor. */
 const templates = [
- ['clean','Clean','Quiet, direct list'],['modern','Modern','Soft cards + imagery'],['editorial','Editorial','Magazine rhythm'],['bistro','Bistro','Warm European'],['classy','Classy','Thin lines + serif'],['imageFirst','Image First','Photography leads'],['compact','Compact','Built for huge menus'],['street','Street','Bolder identity'],['noir','Noir','Dark fine dining'],['coastal','Coastal','Light, airy, seaside'],['market','Market','Handwritten chalkboard'],['grid','Grid','Two-column tiles']
+ ['modern','Aria','Centred cards, generous air'],
+ ['editorial','Gazette','Magazine columns, serif headings'],
+ ['noir','Noir','Dark room, gold accents'],
+ ['street','Bodega','Ink outlines, sticker energy'],
+ ['grid','Kiosk','Two-column photo tiles']
 ];
+const TEMPLATE_ALIASES = {clean:'modern',compact:'modern',coastal:'modern',bistro:'editorial',classy:'editorial',luxury:'noir',market:'noir',imageFirst:'grid'};
+function normalizeTemplate(id){
+ if(templates.some(t=>t[0]===id)) return id;
+ return TEMPLATE_ALIASES[id]||'modern';
+}
+
 
 const backgrounds = [['clean','Clean'],['watermark','Watermark'],['geometry','Soft geometry'],['paper','Paper'],['pattern','Pattern'],['gradient','Gradient shadow'],['dark-premium','Dark premium']];
 
@@ -878,6 +891,8 @@ function loadState(){
  }catch(e){ return defaultState(); }
 }
 let state=loadState();
+if(state.appearance) state.appearance.template=normalizeTemplate(state.appearance.template);
+
 let ui={sheet:null,sheetData:null,modal:null,expandedCategory:'popular',menuSearch:'',superSearch:'',languageSearch:'',editingItem:null,adminSearch:'',menuFilter:'all',superFilter:'all',userFilter:'all',subId:null,userSearch:'',confirm:null,skeleton:false,lastFocus:null,hoursOpen:false,dietFilter:'all',displayCurrency:null,transLang:null,
  /* Menu workspace */
  menuCategory:'all', menuSelect:null, menuReorder:false, menuPreview:false, menuError:false, menuLoading:false, menuDirty:false, menuMore:false, itemDraft:null};
@@ -2183,7 +2198,7 @@ function promoteSheet(){
  ${conflict?`<div class="promo-warn" role="alert">${escapeHtml(conflict)} is already running as a strong promotion. End or soften it first, or choose Subtle or Normal here.</div>`:''}
  ${active>=3?`<div class="promo-warn">${active+1} promotions active — the menu stops feeling special.</div>`:''}
  <div class="sheet-section"><div class="sheet-label">Label</div><div class="preset-scroll">${PROMO_LABELS.map(l=>`<button class="preset ${temp.label===l?'selected':''}" data-action="promo-temp" data-key="label" data-value="${escapeHtml(l)}"><strong>${escapeHtml(l)}</strong></button>`).join('')}</div></div>
- <div class="sheet-section"><div class="sheet-label">Card design</div><div class="promo-gallery">${PROMO_STYLES.map(([id,n,desc])=>`<div class="promo-style-card ${temp.style===id?'selected':''}" role="button" tabindex="0" data-action="promo-temp" data-key="style" data-value="${id}"><div class="promo-style-head"><strong>${escapeHtml(n)}</strong><span>${escapeHtml(desc)}</span></div>${promoPreview(item,category,temp,id)}</div>`).join('')}</div></div>
+ <div class="sheet-section"><div class="sheet-label">Card design</div><div class="promo-gallery">${PROMO_STYLES.map(([id,n,desc])=>`<div class="promo-style-card ${temp.style===id?'selected':''}" role="button" tabindex="0" aria-pressed="${temp.style===id}" data-action="promo-temp" data-key="style" data-value="${id}"><div class="promo-style-head"><strong>${escapeHtml(n)}</strong><span>${escapeHtml(desc)}</span></div>${promoPreview(item,category,temp,id)}<div class="promo-style-foot"><span class="promo-style-mark">${icon('check',13)}</span>${temp.style===id?'Keeping this style':'Keep this style'}</div></div>`).join('')}</div></div>
  <div class="sheet-section"><div class="sheet-label">Offer detail <small>optional</small></div><div class="form-grid">
   <div class="field"><label>Was price (${escapeHtml(currencyOf().primary)})</label><input type="number" step="0.01" min="0" value="${escapeHtml(String(temp.wasPrice??''))}" data-action="promo-temp-input" data-key="wasPrice" placeholder="Higher than ${escapeHtml(String(item.price))}"></div>
   <div class="field"><label>Terms</label><input value="${escapeHtml(temp.terms||'')}" data-action="promo-temp-input" data-key="terms" placeholder="Today only · 2 plates minimum"></div>
