@@ -891,6 +891,8 @@ function loadState(){
  }catch(e){ return defaultState(); }
 }
 let state=loadState();
+if(state.appearance) state.appearance.template=normalizeTemplate(state.appearance.template);
+
 let ui={sheet:null,sheetData:null,modal:null,expandedCategory:'popular',menuSearch:'',superSearch:'',languageSearch:'',editingItem:null,adminSearch:'',menuFilter:'all',superFilter:'all',userFilter:'all',subId:null,userSearch:'',confirm:null,skeleton:false,lastFocus:null,hoursOpen:false,dietFilter:'all',displayCurrency:null,transLang:null,
  /* Menu workspace */
  menuCategory:'all', menuSelect:null, menuReorder:false, menuPreview:false, menuError:false, menuLoading:false, menuDirty:false, menuMore:false, itemDraft:null};
