@@ -1603,7 +1603,7 @@ function selectTemplateCard(id){
   card.classList.toggle('selected',sel);
   card.setAttribute('aria-pressed',String(sel));
   const check=card.querySelector('.preset-check');
-  if(sel&&!check) card.querySelector('strong')?.insertAdjacentHTML('beforeend',`<span class="preset-check">${icon('check',12)}</span>`);
+  if(sel&&!check) card.querySelector(':scope > strong')?.insertAdjacentHTML('beforeend',`<span class="preset-check">${icon('check',12)}</span>`);
   if(!sel&&check) check.remove();
  });
  const activeIdx=cards.findIndex(c=>c.dataset.value===id);
