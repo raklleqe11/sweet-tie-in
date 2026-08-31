@@ -1603,7 +1603,7 @@ function selectTemplateCard(id){
   card.classList.toggle('selected',sel);
   card.setAttribute('aria-pressed',String(sel));
   const check=card.querySelector('.preset-check');
-  if(sel&&!check) card.querySelector('strong')?.insertAdjacentHTML('beforeend',`<span class="preset-check">${icon('check',12)}</span>`);
+  if(sel&&!check) card.querySelector(':scope > strong')?.insertAdjacentHTML('beforeend',`<span class="preset-check">${icon('check',12)}</span>`);
   if(!sel&&check) check.remove();
  });
  const activeIdx=cards.findIndex(c=>c.dataset.value===id);
@@ -1611,7 +1611,7 @@ function selectTemplateCard(id){
  const current=templates.find(t=>t[0]===id);
  const hero=document.querySelector('.appearance-hero');
  if(hero&&current){
-  const name=hero.querySelector('strong'), sub=hero.querySelector('span');
+  const name=hero.querySelector(':scope strong'), sub=hero.querySelector(':scope > div > span, :scope span');
   if(name) name.textContent=current[1];
   if(sub) sub.textContent=current[2];
  }
