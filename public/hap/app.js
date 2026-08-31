@@ -1611,7 +1611,7 @@ function selectTemplateCard(id){
  const current=templates.find(t=>t[0]===id);
  const hero=document.querySelector('.appearance-hero');
  if(hero&&current){
-  const name=hero.querySelector(':scope strong'), sub=hero.querySelector(':scope > div > span, :scope span');
+  const name=hero.querySelector('strong'), sub=hero.querySelector('span');
   if(name) name.textContent=current[1];
   if(sub) sub.textContent=current[2];
  }
