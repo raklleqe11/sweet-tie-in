@@ -372,9 +372,22 @@ const PROMO_STYLES = [
 function promoStyleName(id){ return (PROMO_STYLES.find(s=>s[0]===id)||PROMO_STYLES[0])[1]; }
 const PROMO_LABELS = ["Chef's Pick","Tonight's Pick",'Popular','New','House Favourite','Seasonal','Limited','Table deal','Pair & pour'];
 const CATEGORY_TINTS = [['brand','Brand'],['sage','Sage'],['sand','Sand'],['clay','Clay'],['night','Night']];
+/* Five templates, each a genuinely different layout system rather than a
+   colour swap: centred editorial list, magazine columns, dark fine dining,
+   bold ink outlines, photo tiles. Old ids fold into the closest survivor. */
 const templates = [
- ['clean','Clean','Quiet, direct list'],['modern','Modern','Soft cards + imagery'],['editorial','Editorial','Magazine rhythm'],['bistro','Bistro','Warm European'],['classy','Classy','Thin lines + serif'],['imageFirst','Image First','Photography leads'],['compact','Compact','Built for huge menus'],['street','Street','Bolder identity'],['noir','Noir','Dark fine dining'],['coastal','Coastal','Light, airy, seaside'],['market','Market','Handwritten chalkboard'],['grid','Grid','Two-column tiles']
+ ['modern','Aria','Centred cards, generous air'],
+ ['editorial','Gazette','Magazine columns, serif headings'],
+ ['noir','Noir','Dark room, gold accents'],
+ ['street','Bodega','Ink outlines, sticker energy'],
+ ['grid','Kiosk','Two-column photo tiles']
 ];
+const TEMPLATE_ALIASES = {clean:'modern',compact:'modern',coastal:'modern',bistro:'editorial',classy:'editorial',luxury:'noir',market:'noir',imageFirst:'grid'};
+function normalizeTemplate(id){
+ if(templates.some(t=>t[0]===id)) return id;
+ return TEMPLATE_ALIASES[id]||'modern';
+}
+
 
 const backgrounds = [['clean','Clean'],['watermark','Watermark'],['geometry','Soft geometry'],['paper','Paper'],['pattern','Pattern'],['gradient','Gradient shadow'],['dark-premium','Dark premium']];
 
